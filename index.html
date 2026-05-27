@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Inessentia — Directorio de Terapeutas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  :root {
+    --cream: #F6F1EA;
+    --deep: #2A2520;
+    --warm-gray: #8B8378;
+    --gold: #C9A96E;
+    --light: #EDE8E0;
+    --c-clinica: #4E8070;
+    --c-integrativa: #7A6BA0;
+    --c-fisica: #B97050;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: #1C1915;
+    z-index: 1000;
+    flex-shrink: 0;
+  }
+
+  .header-top {
+    padding: 11px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .header-title span { color: var(--gold); font-style: italic; }
+
+  .filters-main {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  select {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--cream);
+    padding: 5px 28px 5px 10px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23C9A96E' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 10px;
+  }
+  select option { background: #2A2520; color: var(--cream); }
+
+  .mod-group {
+    display: flex;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .mod-btn {
+    background: transparent;
+    border: none;
+    color: rgba(245,240,232,0.5);
+    padding: 5px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .mod-btn + .mod-btn { border-left: 1px solid rgba(255,255,255,0.12); }
+  .mod-btn.active { background: var(--gold); color: var(--deep); font-weight: 500; }
+
+  .zona-input {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--cream);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    outline: none;
+    width: 140px;
+    transition: border-color 0.15s;
+  }
+  .zona-input::placeholder { color: rgba(245,240,232,0.3); }
+  .zona-input:focus { border-color: var(--gold); }
+
+  .counter {
+    font-size: 0.72rem;
+    color: var(--gold);
+    white-space: nowrap;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  /* ── CHIPS BAR ── */
+  .chips-bar {
+    padding: 7px 22px 9px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+  }
+  .chips-bar::-webkit-scrollbar { display: none; }
+  .chips-label {
+    font-size: 0.65rem;
+    color: rgba(245,240,232,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    white-space: nowrap;
+    margin-right: 2px;
+    flex-shrink: 0;
+  }
+  .chip {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: rgba(245,240,232,0.6);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chip:hover { border-color: var(--gold); color: var(--cream); }
+  .chip.active { background: var(--gold); border-color: var(--gold); color: var(--deep); font-weight: 500; }
+
+  /* ── LAYOUT ── */
+  .main { display: flex; flex: 1; overflow: hidden; }
+  #map { flex: 1; z-index: 1; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 340px;
+    background: white;
+    border-left: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .sidebar-header {
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    background: #F5EDE0;
+  }
+  .sidebar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--deep);
+  }
+  .sidebar-sub { font-size: 0.72rem; color: var(--warm-gray); margin-top: 2px; }
+  .list-container { flex: 1; overflow-y: auto; padding: 8px 0; }
+  .list-container::-webkit-scrollbar { width: 4px; }
+  .list-container::-webkit-scrollbar-track { background: transparent; }
+  .list-container::-webkit-scrollbar-thumb { background: #C9A96E55; border-radius: 2px; }
+
+  .therapist-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .therapist-item:hover { background: #FAF6F0; }
+  .therapist-item.active { background: #FFF8EE; border-left-color: var(--gold); }
+  .therapist-name { font-weight: 500; font-size: 0.85rem; color: var(--deep); margin-bottom: 3px; }
+  .therapist-location { font-size: 0.72rem; color: var(--warm-gray); margin-bottom: 5px; }
+  .therapist-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .tag {
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tag-online { background: #E3F2FD; color: #1565C0; }
+  .tag-presencial { background: #FFF3E0; color: #E65100; }
+  .tag-domicilio { background: #F3E5F5; color: #6A1B9A; }
+  .tag-idioma { background: #F0F4F0; color: #3A5A3A; }
+  .tag-clinica { background: #E8F4F0; color: var(--c-clinica); }
+  .tag-integrativa { background: #F0EDF8; color: var(--c-integrativa); }
+  .tag-fisica { background: #FBF0EA; color: var(--c-fisica); }
+  .tag-lista { background: #FFF3E0; color: #B45309; }
+
+  /* ── LOADING ── */
+  #loading-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(28, 25, 21, 0.92);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+  }
+  #loading-overlay.hidden { display: none; }
+  .loading-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    color: var(--cream);
+    font-weight: 300;
+    letter-spacing: 0.06em;
+  }
+  .loading-sub { font-size: 0.78rem; color: var(--gold); }
+  .loading-bar-wrap { width: 240px; height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  .loading-bar { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.35s ease; width: 0%; }
+
+  /* ── POPUP ── */
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16) !important;
+    border: none !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  .leaflet-popup-content { margin: 0 !important; width: 310px !important; }
+  .leaflet-popup-tip { background: white !important; }
+  .leaflet-popup-close-button {
+    color: rgba(255,255,255,0.7) !important;
+    font-size: 18px !important;
+    top: 8px !important;
+    right: 10px !important;
+    z-index: 10;
+  }
+
+  .popup-header { padding: 14px 36px 12px 16px; background: var(--deep); }
+  .popup-tipo { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 5px; }
+  .popup-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; color: var(--cream); line-height: 1.2; }
+  .popup-city { font-size: 0.7rem; color: rgba(245,240,232,0.55); margin-top: 4px; }
+
+  .popup-body { padding: 14px 16px; }
+  .popup-section { margin-bottom: 10px; }
+  .popup-section-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--warm-gray); margin-bottom: 4px; font-weight: 500; }
+  .popup-section-value { font-size: 0.8rem; color: var(--deep); line-height: 1.5; }
+  .popup-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .popup-footer {
+    border-top: 1px solid rgba(0,0,0,0.07);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .popup-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .popup-link:hover { opacity: 0.75; }
+  .popup-costo {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--warm-gray);
+    white-space: nowrap;
+  }
+
+  .no-results {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--warm-gray);
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .zona-input { width: 110px; }
+    .counter { min-width: auto; }
+  }
+  @media (max-width: 520px) {
+    .header-title { font-size: 1.1rem; }
+    .filters-main { gap: 6px; }
+    select { font-size: 0.72rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="loading-title">Red <span style="color:var(--gold);font-style:italic">Inessentia</span></div>
+  <div class="loading-sub" id="loading-msg">Cargando directorio...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+</div>
+
+<header>
+  <div class="header-top">
+    <div class="header-title">Red <span>Inessentia</span></div>
+    <div class="filters-main">
+      <select id="filterTipo" onchange="onTipoChange()">
+        <option value="">Todas las terapias</option>
+      </select>
+      <select id="filterEnfoque" onchange="applyFilters()">
+        <option value="">Todos los enfoques</option>
+      </select>
+      <div class="mod-group">
+        <button class="mod-btn active" id="mod-all"        onclick="setModalidad('')">Todas</button>
+        <button class="mod-btn"        id="mod-online"     onclick="setModalidad('Online')">Online</button>
+        <button class="mod-btn"        id="mod-presencial" onclick="setModalidad('Presencial')">Presencial</button>
+      </div>
+      <input type="text" class="zona-input" id="filterZona" placeholder="🔍 Zona o CP..." oninput="applyFilters()">
+      <span class="counter" id="counter">—</span>
+    </div>
+  </div>
+  <div class="chips-bar">
+    <span class="chips-label">Atiende</span>
+    <button class="chip" onclick="toggleCaso('Individual',   this)">Individual</button>
+    <button class="chip" onclick="toggleCaso('Pareja',       this)">Pareja</button>
+    <button class="chip" onclick="toggleCaso('Familia',      this)">Familia</button>
+    <button class="chip" onclick="toggleCaso('Adolescentes', this)">Adolescentes</button>
+    <button class="chip" onclick="toggleCaso('Niños',        this)">Niños</button>
+  </div>
+</header>
+
+<div class="main">
+  <div id="map"></div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Terapeutas</div>
+      <div class="sidebar-sub" id="sidebar-sub">Selecciona un pin o nombre</div>
+    </div>
+    <div class="list-container" id="list-container"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const TIPO_COLOR = {
+  'Psicología (clínica)': '#4E8070',
+  'Terapia (no clínica)': '#7A6BA0',
+  'Terapia física':       '#B97050',
+};
+const TIPO_LABEL = {
+  'Psicología (clínica)': 'Psicoterapia',
+  'Terapia (no clínica)': 'Terapia integrativa',
+  'Terapia física':       'Terapia física',
+};
+const TIPO_TAG = {
+  'Psicología (clínica)': 'tag-clinica',
+  'Terapia (no clínica)': 'tag-integrativa',
+  'Terapia física':       'tag-fisica',
+};
+
+// ── MAPA ────────────────────────────────────────────────────────────────────
+const map = L.map('map', { center: [19.39, -99.17], zoom: 11 });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+// Convierte cualquier combinación de URLs, @handles e "IG username" en links clicables
+function parseWebLinks(raw) {
+  if (!raw || !raw.trim()) return [];
+  const links = [];
+
+  // Normaliza "IG username" / "IG: username" → "@username"
+  let text = raw.replace(/\bIG[:\s]+/gi, '@').replace(/\bInstagram[:\s.]+/gi, '@');
+
+  // Extrae @handles (Instagram)
+  const handleRe = /@([\w.]+)/g;
+  let m;
+  while ((m = handleRe.exec(text)) !== null) {
+    const username = m[1].replace(/\.+$/, '');
+    if (username) links.push({ type: 'ig', url: `https://instagram.com/${username}`, label: `@${username}` });
+  }
+  text = text.replace(/@[\w.]+/g, '');
+
+  // Extrae URLs web
+  const urlRe = /https?:\/\/[^\s,]+|www\.[^\s,]+/g;
+  while ((m = urlRe.exec(text)) !== null) {
+    let url = m[0].replace(/[.,;)]+$/, '');
+    if (!url.startsWith('http')) url = 'https://' + url;
+    links.push({ type: 'web', url, label: 'Sitio web' });
+  }
+
+  return links;
+}
+
+function crearIcono(tipo) {
+  const color = TIPO_COLOR[tipo] || '#8B8378';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="38" viewBox="0 0 30 38">
+    <path d="M15 0C6.716 0 0 6.716 0 15c0 9.375 15 23 15 23S30 24.375 30 15C30 6.716 23.284 0 15 0z" fill="${color}" opacity="0.88"/>
+    <circle cx="15" cy="15" r="7" fill="white" opacity="0.9"/>
+    <circle cx="15" cy="15" r="3.5" fill="${color}"/>
+  </svg>`;
+  return L.divIcon({ html: svg, className: '', iconSize: [30, 38], iconAnchor: [15, 38], popupAnchor: [0, -42] });
+}
+
+function modTag(m) {
+  const cls = m === 'Online' ? 'tag-online' : m === 'Presencial' ? 'tag-presencial' : 'tag-domicilio';
+  return `<span class="tag ${cls}">${m}</span>`;
+}
+
+function crearPopup(t) {
+  const tipoLabel = TIPO_LABEL[t.tipo] || t.tipo;
+  const tipoColor = TIPO_COLOR[t.tipo] || '#8B8378';
+  const modTags   = (t.modalidades || []).map(modTag).join('');
+  const idiomaTag = t.idiomas?.length ? `<span class="tag tag-idioma">🌐 ${t.idiomas.join(', ')}</span>` : '';
+  const listaTag  = t.disponibilidad && t.disponibilidad !== 'Agenda abierta'
+    ? `<span class="tag tag-lista">⏳ Lista de espera</span>` : '';
+
+  const webLinks = parseWebLinks(t.webpage);
+  const webHtml = webLinks.map(l =>
+    `<a href="${l.url}" target="_blank" class="popup-link" style="color:${tipoColor}">${l.type === 'ig' ? '📸' : '🌐'} ${l.label} ↗</a>`
+  ).join('');
+
+  // Ubicación: muestra zona siempre; si es solo online sin zona fija, lo indica
+  const ubicacion = t.zona && t.zona.toLowerCase() !== 'solo online'
+    ? `📍 ${t.zona}${t.cp ? ` · CP ${t.cp}` : ''}`
+    : `🌐 Solo online`;
+
+  return `
+    <div class="popup-header" style="border-top:3px solid ${tipoColor}">
+      <div class="popup-tipo">${tipoLabel}</div>
+      <div class="popup-name">${t.nombre}</div>
+      <div class="popup-city">${ubicacion}</div>
+    </div>
+    <div class="popup-body">
+      <div class="popup-section">
+        <div class="popup-section-label">Enfoques</div>
+        <div class="popup-section-value">${(t.enfoques || []).join(' · ')}</div>
+      </div>
+      ${t.especialidades ? `<div class="popup-section">
+        <div class="popup-section-label">Especialidades</div>
+        <div class="popup-section-value" style="font-size:0.76rem;color:#555">${t.especialidades}</div>
+      </div>` : ''}
+      <div class="popup-section">
+        <div class="popup-section-label">Atiende</div>
+        <div class="popup-section-value">${(t.casos || []).join(', ')}</div>
+      </div>
+      <div class="popup-tags">${modTags}${idiomaTag}${listaTag}</div>
+    </div>
+    <div class="popup-footer">
+      ${t.telefono ? `<a href="tel:${t.telefono}" class="popup-link" style="color:${tipoColor}">📞 ${t.telefono}</a>` : ''}
+      ${webHtml}
+      ${t.costo ? `<span class="popup-costo">$${t.costo.toLocaleString()} · 1a sesión</span>` : ''}
+    </div>`;
+}
+
+// ── SCATTER duplicados ───────────────────────────────────────────────────────
+function esparcirDuplicados(terapeutas) {
+  const grupos = {};
+  terapeutas.forEach(t => {
+    if (t.lat == null) return;
+    const key = `${t.lat.toFixed(3)},${t.lng.toFixed(3)}`;
+    (grupos[key] = grupos[key] || []).push(t);
+  });
+  Object.values(grupos).forEach(g => {
+    if (g.length < 2) return;
+    const r = 0.002;
+    g.forEach((t, i) => {
+      const a = (2 * Math.PI * i) / g.length;
+      t.lat += r * Math.cos(a);
+      t.lng += r * Math.sin(a);
+    });
+  });
+}
+
+// ── ESTADO ──────────────────────────────────────────────────────────────────
+let allTerapeutas = [];
+let markers = [];
+let modalidadActiva = '';
+let activeCasos = new Set();
+
+// ── FILTROS ─────────────────────────────────────────────────────────────────
+function setModalidad(val) {
+  modalidadActiva = val;
+  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
+  const id = val === '' ? 'mod-all' : val === 'Online' ? 'mod-online' : 'mod-presencial';
+  document.getElementById(id).classList.add('active');
+  applyFilters();
+}
+
+function toggleCaso(caso, el) {
+  activeCasos.has(caso) ? activeCasos.delete(caso) : activeCasos.add(caso);
+  el.classList.toggle('active');
+  applyFilters();
+}
+
+function onTipoChange() {
+  const tipo = document.getElementById('filterTipo').value;
+  poblarEnfoques(tipo);
+  applyFilters();
+}
+
+function poblarTipos() {
+  const tipos = [...new Set(allTerapeutas.map(t => t.tipo).filter(Boolean))].sort();
+  const sel = document.getElementById('filterTipo');
+  sel.innerHTML = '<option value="">Todas las terapias</option>';
+  tipos.forEach(tipo => {
+    const opt = document.createElement('option');
+    opt.value = tipo;
+    opt.textContent = TIPO_LABEL[tipo] || tipo;
+    sel.appendChild(opt);
+  });
+}
+
+function poblarEnfoques(tipoFiltro) {
+  const enfoques = new Set();
+  allTerapeutas.forEach(t => {
+    if (!tipoFiltro || t.tipo === tipoFiltro)
+      (t.enfoques || []).forEach(e => enfoques.add(e));
+  });
+  const prev = document.getElementById('filterEnfoque').value;
+  const sel = document.getElementById('filterEnfoque');
+  sel.innerHTML = '<option value="">Todos los enfoques</option>';
+  [...enfoques].sort().forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e;
+    opt.textContent = e;
+    if (e === prev) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function applyFilters() {
+  const tipo    = document.getElementById('filterTipo').value;
+  const enfoque = document.getElementById('filterEnfoque').value;
+  const zona    = document.getElementById('filterZona').value.toLowerCase().trim();
+
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  document.getElementById('list-container').innerHTML = '';
+  let visible = 0;
+
+  allTerapeutas.forEach(t => {
+    if (!t.lat || !t.lng) return;
+    const matchTipo    = !tipo    || t.tipo === tipo;
+    const matchEnfoque = !enfoque || (t.enfoques || []).includes(enfoque);
+    const matchMod     = !modalidadActiva || (t.modalidades || []).includes(modalidadActiva);
+    const matchCasos   = activeCasos.size === 0 || [...activeCasos].some(c => (t.casos || []).includes(c));
+    const matchZona    = !zona || (t.zona || '').toLowerCase().includes(zona) || (t.cp || '').includes(zona);
+
+    if (matchTipo && matchEnfoque && matchMod && matchCasos && matchZona) {
+      const idx = markers.length;
+      markers.push(crearMarcador(t, idx));
+      agregarALista(t, idx);
+      visible++;
+    }
+  });
+
+  if (visible === 0 && allTerapeutas.length > 0) {
+    document.getElementById('list-container').innerHTML =
+      '<div class="no-results">Sin resultados para estos filtros.<br>Intenta con menos criterios.</div>';
+  }
+  document.getElementById('counter').textContent = `${visible} terapeuta${visible !== 1 ? 's' : ''}`;
+}
+
+function crearMarcador(t, idx) {
+  const marker = L.marker([t.lat, t.lng], { icon: crearIcono(t.tipo) })
+    .bindPopup(crearPopup(t), { maxWidth: 310 })
+    .addTo(map);
+  marker.on('click', () => activarItem(idx));
+  return marker;
+}
+
+function activarItem(idx) {
+  document.querySelectorAll('.therapist-item').forEach(el => el.classList.remove('active'));
+  const item = document.querySelector(`[data-idx="${idx}"]`);
+  if (item) { item.classList.add('active'); item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function agregarALista(t, idx) {
+  const tagClass   = TIPO_TAG[t.tipo] || 'tag-clinica';
+  const tipoLabel  = TIPO_LABEL[t.tipo] || t.tipo;
+  const modTags  = (t.modalidades || []).map(modTag).join('');
+  const idiomTag = t.idiomas?.length ? `<span class="tag tag-idioma">🌐 ${t.idiomas.join(', ')}</span>` : '';
+  const listaTag = t.disponibilidad && t.disponibilidad !== 'Agenda abierta'
+    ? `<span class="tag tag-lista">⏳ Lista de espera</span>` : '';
+
+  const el = document.createElement('div');
+  el.className = 'therapist-item';
+  el.setAttribute('data-idx', idx);
+  el.innerHTML = `
+    <div class="therapist-name">${t.nombre}</div>
+    <div class="therapist-location">📍 ${t.zona}</div>
+    <div class="therapist-tags">
+      <span class="tag ${tagClass}">${tipoLabel}</span>
+      ${modTags}${idiomTag}${listaTag}
+    </div>`;
+  el.onclick = () => {
+    activarItem(idx);
+    if (markers[idx]) {
+      map.setView(markers[idx].getLatLng(), 14, { animate: true });
+      markers[idx].openPopup();
+    }
+  };
+  document.getElementById('list-container').appendChild(el);
+}
+
+// ── DATOS ───────────────────────────────────────────────────────────────────
+function setLoading(msg, pct) {
+  document.getElementById('loading-msg').textContent = msg;
+  document.getElementById('loading-bar').style.width = pct + '%';
+}
+
+async function cargarDatos() {
+  setLoading('Cargando directorio...', 30);
+  const resp = await fetch('data.json');
+  if (!resp.ok) throw new Error(`No se pudo cargar data.json (${resp.status})`);
+  const data = await resp.json();
+  setLoading('Ubicando terapeutas...', 75);
+  return data.terapeutas;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+(async () => {
+  try {
+    allTerapeutas = await cargarDatos();
+    esparcirDuplicados(allTerapeutas);
+    poblarTipos();
+    poblarEnfoques('');
+    setLoading('Listo', 100);
+    document.getElementById('loading-overlay').classList.add('hidden');
+    applyFilters();
+  } catch (e) {
+    document.getElementById('loading-msg').textContent = `Error: ${e.message}`;
+    document.getElementById('loading-bar').style.background = '#B97050';
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>
