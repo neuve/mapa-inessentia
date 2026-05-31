@@ -403,9 +403,17 @@ function parseWebLinks(raw) {
   // Normaliza "IG username" / "IG: username" → "@username"
   let text = raw.replace(/\bIG[:\s]+/gi, '@').replace(/\bInstagram[:\s.]+/gi, '@');
 
-  // Extrae @handles (Instagram)
-  const handleRe = /@([\w.]+)/g;
+  // Extrae URLs de instagram.com antes que el resto
+  const igUrlRe = /https?:\/\/(?:www\.)?instagram\.com\/([^/?#\s]+)/gi;
   let m;
+  while ((m = igUrlRe.exec(text)) !== null) {
+    const username = m[1].replace(/\/$/, '');
+    if (username) links.push({ type: 'ig', url: m[0], label: `@${username}` });
+  }
+  text = text.replace(/https?:\/\/(?:www\.)?instagram\.com\/[^\s,]*/gi, '');
+
+  // Extrae @handles
+  const handleRe = /@([\w.]+)/g;
   while ((m = handleRe.exec(text)) !== null) {
     const username = m[1].replace(/\.+$/, '');
     if (username) links.push({ type: 'ig', url: `https://instagram.com/${username}`, label: `@${username}` });
