@@ -215,14 +215,19 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .tag-online { background: #E3F2FD; color: #1565C0; }
-  .tag-presencial { background: #FFF3E0; color: #E65100; }
-  .tag-domicilio { background: #F3E5F5; color: #6A1B9A; }
-  .tag-idioma { background: #F0F4F0; color: #3A5A3A; }
-  .tag-clinica { background: #E8F4F0; color: var(--c-clinica); }
-  .tag-integrativa { background: #F0EDF8; color: var(--c-integrativa); }
-  .tag-fisica { background: #FBF0EA; color: var(--c-fisica); }
-  .tag-lista { background: #FFF3E0; color: #B45309; }
+  .tag-online       { background: #E3F2FD; color: #1565C0; }
+  .tag-presencial   { background: #FFF3E0; color: #E65100; }
+  .tag-domicilio    { background: #F3E5F5; color: #6A1B9A; }
+  .tag-idioma       { background: #F0F4F0; color: #3A5A3A; }
+  .tag-somatica     { background: #E8F4F0; color: #4E8070; }
+  .tag-transpersonal{ background: #F0EDF8; color: #7A6BA0; }
+  .tag-psicologica  { background: #E8F0F8; color: #5B8BA0; }
+  .tag-fisica       { background: #FBF0EA; color: #B97050; }
+  .tag-psiquiatrica { background: #EAF0F8; color: #3D5A8A; }
+  .tag-lista        { background: #FFF3E0; color: #B45309; }
+
+  /* subtipo select — oculto hasta que tipo = Psicoterapia */
+  #filterSubtipo { display: none; }
 
   /* ── LOADING ── */
   #loading-overlay {
@@ -336,6 +341,9 @@
       <select id="filterTipo" onchange="onTipoChange()">
         <option value="">Todas las terapias</option>
       </select>
+      <select id="filterSubtipo" onchange="onSubtipoChange()">
+        <option value="">Todos los tipos</option>
+      </select>
       <select id="filterEnfoque" onchange="applyFilters()">
         <option value="">Todos los enfoques</option>
       </select>
@@ -372,21 +380,37 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
+const TIPO_ORDER = ['Psicoterapia', 'Terapia Física', 'Psiquiátrica'];
+
 const TIPO_COLOR = {
-  'Psicología (clínica)': '#4E8070',
-  'Terapia (no clínica)': '#7A6BA0',
-  'Terapia física':       '#B97050',
+  'Psicoterapia': '#4E8070',
+  'Terapia Física': '#B97050',
+  'Psiquiátrica':   '#3D5A8A',
 };
-const TIPO_LABEL = {
-  'Psicología (clínica)': 'Psicoterapia',
-  'Terapia (no clínica)': 'Terapia integrativa',
-  'Terapia física':       'Terapia física',
+const SUBTIPO_COLOR = {
+  'Terapia somática':     '#4E8070',
+  'Terapia transpersonal':'#7A6BA0',
+  'Terapia psicológica':  '#5B8BA0',
+};
+const SUBTIPO_TAG = {
+  'Terapia somática':     'tag-somatica',
+  'Terapia transpersonal':'tag-transpersonal',
+  'Terapia psicológica':  'tag-psicologica',
 };
 const TIPO_TAG = {
-  'Psicología (clínica)': 'tag-clinica',
-  'Terapia (no clínica)': 'tag-integrativa',
-  'Terapia física':       'tag-fisica',
+  'Terapia Física':  'tag-fisica',
+  'Psiquiátrica':    'tag-psiquiatrica',
 };
+
+function getColor(t) {
+  return (t.subtipo && SUBTIPO_COLOR[t.subtipo]) || TIPO_COLOR[t.tipo] || '#8B8378';
+}
+function getTagClass(t) {
+  return (t.subtipo && SUBTIPO_TAG[t.subtipo]) || TIPO_TAG[t.tipo] || 'tag-somatica';
+}
+function getTagLabel(t) {
+  return t.subtipo || t.tipo;
+}
 
 // ── MAPA ────────────────────────────────────────────────────────────────────
 const map = L.map('map', { center: [19.39, -99.17], zoom: 11 });
@@ -431,8 +455,8 @@ function parseWebLinks(raw) {
   return links;
 }
 
-function crearIcono(tipo) {
-  const color = TIPO_COLOR[tipo] || '#8B8378';
+function crearIcono(t) {
+  const color = getColor(t);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="38" viewBox="0 0 30 38">
     <path d="M15 0C6.716 0 0 6.716 0 15c0 9.375 15 23 15 23S30 24.375 30 15C30 6.716 23.284 0 15 0z" fill="${color}" opacity="0.88"/>
     <circle cx="15" cy="15" r="7" fill="white" opacity="0.9"/>
@@ -447,8 +471,8 @@ function modTag(m) {
 }
 
 function crearPopup(t) {
-  const tipoLabel = TIPO_LABEL[t.tipo] || t.tipo;
-  const tipoColor = TIPO_COLOR[t.tipo] || '#8B8378';
+  const tipoLabel = t.subtipo ? `${t.tipo} · ${t.subtipo}` : t.tipo;
+  const tipoColor = getColor(t);
   const modTags   = (t.modalidades || []).map(modTag).join('');
   const idiomaTag = t.idiomas?.length ? `<span class="tag tag-idioma">🌐 ${t.idiomas.join(', ')}</span>` : '';
   const listaTag  = t.disponibilidad && t.disponibilidad !== 'Agenda abierta'
@@ -534,44 +558,73 @@ function toggleCaso(caso, el) {
 
 function onTipoChange() {
   const tipo = document.getElementById('filterTipo').value;
-  poblarEnfoques(tipo);
+  const subSel = document.getElementById('filterSubtipo');
+  subSel.style.display = tipo === 'Psicoterapia' ? 'inline-block' : 'none';
+  subSel.value = '';
+  poblarEnfoques(tipo, '');
+  applyFilters();
+}
+
+function onSubtipoChange() {
+  const tipo    = document.getElementById('filterTipo').value;
+  const subtipo = document.getElementById('filterSubtipo').value;
+  poblarEnfoques(tipo, subtipo);
+  document.getElementById('filterEnfoque').value = '';
   applyFilters();
 }
 
 function poblarTipos() {
-  const tipos = [...new Set(allTerapeutas.map(t => t.tipo).filter(Boolean))].sort();
+  const tipos = [...new Set(allTerapeutas.map(t => t.tipo).filter(Boolean))];
+  tipos.sort((a, b) => {
+    const ia = TIPO_ORDER.indexOf(a), ib = TIPO_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
   const sel = document.getElementById('filterTipo');
   sel.innerHTML = '<option value="">Todas las terapias</option>';
   tipos.forEach(tipo => {
     const opt = document.createElement('option');
-    opt.value = tipo;
-    opt.textContent = TIPO_LABEL[tipo] || tipo;
+    opt.value = tipo; opt.textContent = tipo;
     sel.appendChild(opt);
   });
 }
 
-function poblarEnfoques(tipoFiltro) {
+function poblarSubtipos() {
+  const subtipos = [...new Set(
+    allTerapeutas.filter(t => t.tipo === 'Psicoterapia' && t.subtipo).map(t => t.subtipo)
+  )].sort();
+  const sel = document.getElementById('filterSubtipo');
+  sel.innerHTML = '<option value="">Todos los tipos</option>';
+  subtipos.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s;
+    sel.appendChild(opt);
+  });
+}
+
+function poblarEnfoques(tipoFiltro, subtipoFiltro) {
   const enfoques = new Set();
   allTerapeutas.forEach(t => {
-    if (!tipoFiltro || t.tipo === tipoFiltro)
-      (t.enfoques || []).forEach(e => enfoques.add(e));
+    const matchTipo    = !tipoFiltro    || t.tipo    === tipoFiltro;
+    const matchSubtipo = !subtipoFiltro || t.subtipo === subtipoFiltro;
+    if (matchTipo && matchSubtipo) (t.enfoques || []).forEach(e => enfoques.add(e));
   });
   const prev = document.getElementById('filterEnfoque').value;
-  const sel = document.getElementById('filterEnfoque');
+  const sel  = document.getElementById('filterEnfoque');
   sel.innerHTML = '<option value="">Todos los enfoques</option>';
   [...enfoques].sort().forEach(e => {
     const opt = document.createElement('option');
-    opt.value = e;
-    opt.textContent = e;
+    opt.value = e; opt.textContent = e;
     if (e === prev) opt.selected = true;
     sel.appendChild(opt);
   });
 }
 
 function applyFilters() {
-  const tipo    = document.getElementById('filterTipo').value;
-  const enfoque = document.getElementById('filterEnfoque').value;
-  const zona    = document.getElementById('filterZona').value.toLowerCase().trim();
+  const tipo     = document.getElementById('filterTipo').value;
+  const subtipo  = document.getElementById('filterSubtipo').value;
+  const enfoque  = document.getElementById('filterEnfoque').value;
+  const zona     = document.getElementById('filterZona').value.toLowerCase().trim();
 
   markers.forEach(m => map.removeLayer(m));
   markers = [];
@@ -580,13 +633,14 @@ function applyFilters() {
 
   allTerapeutas.forEach(t => {
     if (!t.lat || !t.lng) return;
-    const matchTipo    = !tipo    || t.tipo === tipo;
+    const matchTipo    = !tipo    || t.tipo    === tipo;
+    const matchSubtipo = !subtipo || t.subtipo === subtipo;
     const matchEnfoque = !enfoque || (t.enfoques || []).includes(enfoque);
     const matchMod     = !modalidadActiva || (t.modalidades || []).includes(modalidadActiva);
     const matchCasos   = activeCasos.size === 0 || [...activeCasos].some(c => (t.casos || []).includes(c));
     const matchZona    = !zona || (t.zona || '').toLowerCase().includes(zona) || (t.cp || '').includes(zona);
 
-    if (matchTipo && matchEnfoque && matchMod && matchCasos && matchZona) {
+    if (matchTipo && matchSubtipo && matchEnfoque && matchMod && matchCasos && matchZona) {
       const idx = markers.length;
       markers.push(crearMarcador(t, idx));
       agregarALista(t, idx);
@@ -602,7 +656,7 @@ function applyFilters() {
 }
 
 function crearMarcador(t, idx) {
-  const marker = L.marker([t.lat, t.lng], { icon: crearIcono(t.tipo) })
+  const marker = L.marker([t.lat, t.lng], { icon: crearIcono(t) })
     .bindPopup(crearPopup(t), { maxWidth: 310 })
     .addTo(map);
   marker.on('click', () => activarItem(idx));
@@ -616,8 +670,8 @@ function activarItem(idx) {
 }
 
 function agregarALista(t, idx) {
-  const tagClass   = TIPO_TAG[t.tipo] || 'tag-clinica';
-  const tipoLabel  = TIPO_LABEL[t.tipo] || t.tipo;
+  const tagClass  = getTagClass(t);
+  const tipoLabel = getTagLabel(t);
   const modTags  = (t.modalidades || []).map(modTag).join('');
   const idiomTag = t.idiomas?.length ? `<span class="tag tag-idioma">🌐 ${t.idiomas.join(', ')}</span>` : '';
   const listaTag = t.disponibilidad && t.disponibilidad !== 'Agenda abierta'
@@ -664,7 +718,8 @@ async function cargarDatos() {
     allTerapeutas = await cargarDatos();
     esparcirDuplicados(allTerapeutas);
     poblarTipos();
-    poblarEnfoques('');
+    poblarSubtipos();
+    poblarEnfoques('', '');
     setLoading('Listo', 100);
     document.getElementById('loading-overlay').classList.add('hidden');
     applyFilters();
