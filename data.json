@@ -325,6 +325,42 @@
       "disponibilidad": "Agenda abierta",
       "lat": 21.1230,
       "lng": -101.6640
+    },
+    {
+      "nombre": "Claudia Stepensky",
+      "tipo": "Psicoterapia",
+      "subtipo": "Terapia somática",
+      "enfoques": ["Terapia familiar sistémica", "Experiencia somática", "Core energética"],
+      "especialidades": "Ansiedad, depresión, dificultades relacionales, trauma, duelos, crisis. Especialidad en vínculo, apego y regulación emocional. +20 años de experiencia.",
+      "telefono": "9988743971",
+      "webpage": null,
+      "casos": ["Individual", "Pareja", "Familia"],
+      "modalidades": ["Online", "Presencial"],
+      "zona": "Valle de Bravo, Estado de México",
+      "cp": "51200",
+      "idiomas": ["Inglés"],
+      "costo": 1800,
+      "disponibilidad": "Agenda abierta",
+      "lat": 19.1927,
+      "lng": -100.1316
+    },
+    {
+      "nombre": "Hilda Martinez Vega",
+      "tipo": "Psicoterapia",
+      "subtipo": "Terapia somática",
+      "enfoques": ["Experiencia somática", "Osteopatía visceral y neural", "Terapia Craneosacral", "Medicina Germánica"],
+      "especialidades": "Abuso sexual, accidentes, ansiedad, dolor crónico, enfermedades autoinmunes, fatiga crónica, migrañas, insomnio, cirugías, postoperatorio, descodificación biológica.",
+      "telefono": "5511957245",
+      "webpage": null,
+      "casos": ["Individual"],
+      "modalidades": ["Online", "Presencial"],
+      "zona": "Tequisquiapan, Querétaro",
+      "cp": "76790",
+      "idiomas": [],
+      "costo": 1000,
+      "disponibilidad": "Agenda abierta",
+      "lat": 20.5222,
+      "lng": -99.8935
     }
   ]
 }
