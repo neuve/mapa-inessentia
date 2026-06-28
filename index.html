@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Red Inessentia — Directorio de Terapeutas</title>
+<title>Red Inessentia — Directorio de terapeutas somáticos, psicoterapeutas y terapia física en Latinoamérica</title>
+<meta name="description" content="Encuentra terapeutas en experiencia somática, psicoterapia, terapia familiar sistémica, terapia transpersonal, psiquiatría y terapia física. Directorio interactivo con filtros por enfoque, modalidad (online/presencial) y ubicación. Recomendados por Patricio Ruiz.">
+<meta property="og:title" content="Red Inessentia — Directorio de Terapeutas">
+<meta property="og:description" content="Mapa interactivo de terapeutas anglo e hispanoparlantes en Latinoamérica. Filtra por tipo de terapia, enfoque, modalidad y ubicación.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.inessentia.mx/red-inessentia">
+<meta property="og:locale" content="es_MX">
+<link rel="canonical" href="https://www.inessentia.mx/red-inessentia">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -314,10 +321,24 @@
     line-height: 1.7;
   }
 
+  /* ── INFO BAR ── */
+  .info-bar {
+    background: #1C1915;
+    padding: 12px 24px;
+    font-size: 0.72rem;
+    color: rgba(245,240,232,0.5);
+    line-height: 1.6;
+    flex-shrink: 0;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .info-bar strong { color: var(--gold); font-weight: 500; }
+
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .zona-input { width: 110px; }
     .counter { min-width: auto; }
+    .info-bar { font-size: 0.65rem; padding: 10px 16px; }
   }
   @media (max-width: 520px) {
     .header-title { font-size: 1.1rem; }
@@ -375,6 +396,10 @@
     </div>
     <div class="list-container" id="list-container"></div>
   </div>
+</div>
+
+<div class="info-bar">
+  <strong>Red Inessentia</strong> es un directorio interactivo de terapeutas anglo e hispanoparlantes en Latinoamérica principalmente. Aquí puedes encontrar profesionales en terapia familiar sistémica, experiencia somática, psicoterapia, terapia transpersonal, psiquiatría y terapia física recomendadas por Patricio Ruiz. Filtra por tipo de terapia, enfoque, modalidad (online o presencial) y ubicación para encontrar al terapeuta que mejor se adapte a tus necesidades.
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
