@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Qué esperar de la terapia somática? — Red Inessentia</title>
+<meta name="description" content="Qué es la terapia somática, cómo funciona una sesión y por qué el cuerpo es el recurso principal para navegar procesos emocionales y de vida.">
+<meta property="og:title" content="¿Qué esperar de la terapia somática? — Red Inessentia">
+<meta property="og:description" content="Qué es la terapia somática, cómo funciona una sesión y por qué el cuerpo es el recurso principal para navegar procesos emocionales y de vida.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.inessentia.mx/blog/que-esperar-de-la-terapia">
+<meta property="og:locale" content="es_MX">
+<link rel="canonical" href="https://www.inessentia.mx/blog/que-esperar-de-la-terapia">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F6F1EA;
+    --deep: #2A2520;
+    --warm-gray: #8B8378;
+    --gold: #C9A96E;
+    --light: #EDE8E0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: #1C1915;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .nav-brand span { color: var(--gold); font-style: italic; }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-links a {
+    font-size: 0.78rem;
+    color: rgba(245,240,232,0.6);
+    text-decoration: none;
+    transition: color 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-links a.active { color: var(--gold); }
+  .lang-switch {
+    font-size: 0.7rem;
+    color: rgba(245,240,232,0.4);
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 3px 10px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .lang-switch:hover { color: var(--cream); border-color: var(--gold); }
+
+  /* ── ARTICLE ── */
+  main {
+    flex: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    width: 100%;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .post-date {
+    font-size: 0.75rem;
+    color: var(--warm-gray);
+    letter-spacing: 0.04em;
+  }
+  .post-tag {
+    font-size: 0.62rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(201,169,110,0.15);
+    color: var(--gold);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .post-reading {
+    font-size: 0.72rem;
+    color: var(--warm-gray);
+  }
+
+  article h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--deep);
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  article h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 36px 0 12px;
+    color: var(--deep);
+    line-height: 1.3;
+  }
+
+  article h3 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 28px 0 8px;
+    color: var(--deep);
+  }
+
+  article p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #3A3530;
+    margin-bottom: 18px;
+  }
+
+  article ul, article ol {
+    margin: 0 0 18px 20px;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #3A3530;
+  }
+  article li { margin-bottom: 6px; }
+
+  article blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 12px 20px;
+    margin: 24px 0;
+    background: rgba(201,169,110,0.06);
+    border-radius: 0 8px 8px 0;
+  }
+  article blockquote p {
+    color: var(--warm-gray);
+    font-style: italic;
+    margin-bottom: 0;
+  }
+
+  article a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s;
+  }
+  article a:hover { opacity: 0.75; }
+
+  article img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 24px 0;
+  }
+
+  article strong { color: var(--deep); }
+
+  article hr {
+    border: none;
+    border-top: 1px solid var(--light);
+    margin: 36px 0;
+  }
+
+  /* ── CTA ── */
+  .post-cta {
+    margin-top: 48px;
+    padding: 28px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .post-cta p {
+    font-size: 0.88rem;
+    color: var(--warm-gray);
+    margin-bottom: 14px;
+  }
+  .post-cta a {
+    display: inline-block;
+    background: var(--deep);
+    color: var(--cream);
+    padding: 10px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+  .post-cta a:hover { background: #3D3830; }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--gold);
+    text-decoration: none;
+    margin-top: 40px;
+    transition: opacity 0.15s;
+  }
+  .back-link:hover { opacity: 0.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #1C1915;
+    padding: 16px 24px;
+    font-size: 0.72rem;
+    color: rgba(245,240,232,0.5);
+    line-height: 1.6;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  footer strong { color: var(--gold); font-weight: 500; }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    article h1 { font-size: 1.8rem; }
+    main { padding: 32px 18px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/red-inessentia" class="nav-brand">Red <span>Inessentia</span></a>
+  <div class="nav-links">
+    <a href="/red-inessentia">Directorio</a>
+    <a href="/blog/" class="active">Blog</a>
+    
+  </div>
+</nav>
+
+<main>
+  <div class="post-meta">
+    <span class="post-date">15 Jun 2026</span>
+    <span class="post-tag">Terapia somática</span>
+    <span class="post-reading">2 min de lectura</span>
+  </div>
+
+  <article>
+    <h1>¿Qué esperar de la terapia somática?</h1>
+    <p>Si estás considerando iniciar un proceso terapéutico, es natural tener preguntas sobre qué esperar. La terapia somática es un enfoque que trabaja con el cuerpo como recurso principal, reconociendo que nuestras experiencias de vida quedan inscritas no solo en la mente, sino en el cuerpo.</p>
+<h2>¿Qué es la terapia somática?</h2>
+<p>La terapia somática parte de una premisa fundamental: el cuerpo es nuestro principal recurso para navegar el mundo. A diferencia de enfoques que trabajan exclusivamente desde la conversación, la terapia somática integra la consciencia corporal como herramienta central del proceso.</p>
+<p>Esto no significa que no se hable en sesión — se habla mucho. Pero la atención se dirige también a lo que ocurre en el cuerpo: las sensaciones, tensiones, impulsos de movimiento y patrones que se manifiestan mientras exploramos temas importantes.</p>
+<h2>¿Cómo es una primera sesión?</h2>
+<p>Generalmente, el proceso inicia con un contacto breve — una llamada o videollamada de 20 minutos — donde se establece el encuadre: frecuencia de sesiones, horarios, costos y acuerdos básicos.</p>
+<p>En la primera sesión se exploran preguntas como:</p>
+<ul>
+<li>¿Cuál es la temática de vida que estás experimentando?</li>
+<li>¿Cuáles son los retos que se te presentan?</li>
+<li>¿Cómo los experimentas en tu cuerpo?</li>
+<li>¿Qué emociones, ideas y sensaciones físicas surgen en torno al tema?</li>
+</ul>
+<h2>¿Para quién es?</h2>
+<p>La terapia somática puede ser útil si experimentas:</p>
+<ul>
+<li><strong>Ansiedad o estrés crónico</strong> — cuando el cuerpo se mantiene en estado de alerta</li>
+<li><strong>Trauma</strong> — experiencias que dejaron una huella en el sistema nervioso</li>
+<li><strong>Dificultades relacionales</strong> — patrones que se repiten en vínculos</li>
+<li><strong>Desconexión corporal</strong> — sentir que &quot;vives en la cabeza&quot;</li>
+<li><strong>Dolor crónico</strong> — cuando el cuerpo expresa lo que las palabras no alcanzan</li>
+<li><strong>Procesos de cambio</strong> — momentos de transición que generan incertidumbre</li>
+</ul>
+<h2>¿Qué enfoques existen?</h2>
+<p>En el <a href="/red-inessentia">directorio de Red Inessentia</a> puedes encontrar terapeutas con diferentes enfoques somáticos:</p>
+<ul>
+<li><strong>Experiencia Somática (Somatic Experiencing)</strong> — trabaja con la regulación del sistema nervioso y la resolución de trauma</li>
+<li><strong>Core Energetics</strong> — integra cuerpo, emociones y espiritualidad</li>
+<li><strong>Terapia Craneosacral</strong> — trabajo sutil con el sistema nervioso central</li>
+<li><strong>Gestalt con orientación corporal</strong> — consciencia del aquí y ahora a través del cuerpo</li>
+</ul>
+<h2>¿Online o presencial?</h2>
+<p>Ambas modalidades funcionan. La terapia presencial permite un trabajo corporal más directo, mientras que la terapia online ofrece accesibilidad y la comodidad de tu propio espacio. Muchos terapeutas ofrecen ambas opciones.</p>
+<hr>
+<blockquote>
+<p>El cuerpo guarda la cuenta. Pero también guarda los recursos para sanar.</p>
+</blockquote>
+<p>Si quieres explorar qué terapeuta podría acompañarte, consulta el <a href="/red-inessentia">directorio interactivo de Red Inessentia</a> donde puedes filtrar por enfoque, modalidad y ubicación.</p>
+
+  </article>
+
+  <div class="post-cta">
+    <p>¿Buscas un terapeuta que trabaje con este enfoque?</p>
+    <a href="/red-inessentia">Explorar el directorio</a>
+  </div>
+
+  <a href="/blog/" class="back-link">&larr; Volver al blog</a>
+</main>
+
+<footer>
+  <strong>Red Inessentia</strong> &mdash; Directorio de terapeutas recomendados por <a href="https://patricioruiz.mx">Patricio Ruiz</a>.
+</footer>
+
+</body>
+</html>
