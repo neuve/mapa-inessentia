@@ -262,6 +262,7 @@ function buildPost(post, allPosts) {
   out = out.replace(/\{\{date\}\}/g, post.dateFormatted);
   out = out.replace(/\{\{category\}\}/g, post.category || '');
   out = out.replace(/\{\{readingTime\}\}/g, `${post.readingTime}`);
+  out = out.replace(/\{\{readingUnit\}\}/g, i18n.readingUnit);
   out = out.replace(/\{\{content\}\}/g, post.htmlContent);
   out = out.replace(/\{\{ctaText\}\}/g, i18n.ctaText);
   out = out.replace(/\{\{ctaButton\}\}/g, i18n.ctaButton);
