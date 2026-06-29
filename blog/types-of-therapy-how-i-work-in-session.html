@@ -229,6 +229,13 @@
   }
   .back-link:hover { opacity: 0.7; }
 
+  /* ── COMMENTS ── */
+  #disqus_thread {
+    margin-top: 48px;
+    padding-top: 36px;
+    border-top: 1px solid var(--light);
+  }
+
   /* ── FOOTER ── */
   footer {
     background: #1C1915;
@@ -293,6 +300,21 @@
     <p>Looking for a therapist who works with this approach?</p>
     <a href="/red-inessentia">Explore the directory</a>
   </div>
+
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'https://www.inessentia.mx/blog/types-of-therapy-how-i-work-in-session.html';
+      this.page.identifier = 'types-of-therapy-how-i-work-in-session';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://inessentia.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
   <a href="/blog/" class="back-link">&larr; Back to blog</a>
 </main>
